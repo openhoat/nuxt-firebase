@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { inspect } from 'node:util'
 import type { NuxtConfig } from '@nuxt/schema'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import type { AppConfig } from '~/types'
 
 const buildConfig = () => {
@@ -9,11 +10,22 @@ const buildConfig = () => {
     NUXT_DEBUG: debug = 'false',
     NUXT_FIREBASE_CLOUD_REGION: region = 'europe-west9',
     NUXT_FIREBASE_CLOUD_MAX_INSTANCES: maxInstances = '3',
+    NUXT_FIREBASE_PROJECT_ID: firebaseProjectId,
+    NUXT_FIREBASE_SERVICE_ACCOUNT_CLIENT_EMAIL:
+      firebaseServiceAccountClientEmail,
+    NUXT_FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY: firebaseServiceAccountPrivateKey,
   } = process.env
   const config: AppConfig = {
     debug: debug === 'true',
     maxInstances: Number(maxInstances),
     region,
+    runtimeConfig: {
+      firebaseServiceAccountClientEmail,
+      firebaseServiceAccountPrivateKey,
+      public: {
+        firebaseProjectId,
+      },
+    },
   }
   if (config.debug) {
     console.info('Loaded config:', inspect(config, { sorted: true }))
@@ -22,7 +34,7 @@ const buildConfig = () => {
 }
 
 const config = buildConfig()
-const { debug, maxInstances, region } = config
+const { debug, maxInstances, region, runtimeConfig } = config
 
 const nuxtConfig: NuxtConfig = {
   build: {
@@ -30,10 +42,23 @@ const nuxtConfig: NuxtConfig = {
   },
   buildDir: fileURLToPath(new URL('nuxt-build', import.meta.url)),
   compatibilityDate: '2024-04-03',
+  css: [
+    'vuetify/lib/styles/main.sass',
+    '@mdi/font/css/materialdesignicons.css',
+  ],
   debug,
   devtools: { enabled: true },
   logLevel: 'info',
-  modules: ['@nuxtjs/robots'],
+  modules: [
+    (_options, nuxt) => {
+      nuxt.hooks.hook('vite:extendConfig', (config) => {
+        if (config.plugins) {
+          config.plugins.push(vuetify({ autoImport: true }))
+        }
+      })
+    },
+    '@nuxtjs/robots',
+  ],
   nitro: {
     firebase: {
       gen: 2,
@@ -46,7 +71,22 @@ const nuxtConfig: NuxtConfig = {
       dir: fileURLToPath(new URL('dist/nuxt', import.meta.url)),
     },
   },
+  runtimeConfig,
   srcDir: 'src',
+  vite: {
+    css: {
+      preprocessorOptions: {
+        sass: {
+          api: 'modern',
+        },
+      },
+    },
+    vue: {
+      template: {
+        transformAssetUrls,
+      },
+    },
+  },
 }
 
 export default defineNuxtConfig(nuxtConfig)

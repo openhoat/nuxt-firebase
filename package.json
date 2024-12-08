@@ -21,9 +21,11 @@
     "husky": "9.1.7",
     "prettier": "3.4.2",
     "rimraf": "6.0.1",
+    "sass-embedded": "1.82.0",
     "typescript": "5.6.3",
     "vite-plugin-vuetify": "2.0.4",
-    "vue-tsc": "2.1.10"
+    "vue-tsc": "2.1.10",
+    "vuetify": "3.7.5"
   },
   "description": "Demo project about nuxt and firebase functions",
   "engines": {
@@ -207,10 +209,10 @@
       "dependencies": ["deploy:staging"]
     },
     "deploy:ci:prod": {
-      "command": "firebase -P prod deploy --only functions,hosting"
+      "command": "firebase -P prod deploy --only firestore,functions,hosting"
     },
     "deploy:ci:staging": {
-      "command": "firebase -P staging deploy --only functions,hosting"
+      "command": "firebase -P staging deploy --only firestore,functions,hosting"
     },
     "deploy:prod": {
       "command": "pnpm run deploy:ci:prod",
@@ -270,7 +272,7 @@
       "service": true
     },
     "start:emulators": {
-      "command": "firebase emulators:start --only functions,hosting",
+      "command": "firebase emulators:start --only firestore,functions,hosting",
       "dependencies": ["build:firebase"],
       "env": {
         "NODE_ENV": "production"
