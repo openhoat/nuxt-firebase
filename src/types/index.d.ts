@@ -1,8 +1,15 @@
 import type { Firestore } from 'firebase-admin/firestore'
-import type { RouteMiddleware } from '#app'
 
 export type AppPublicRuntimeConfig = {
+  firebaseApiKey: string
+  firebaseAppId: string
+  firebaseAuthDomain: string
+  firebaseAuthEmulatorUrl: string
+  firebaseMeasurementId: string
+  firebaseMessagingSenderId: string
   firebaseProjectId?: string
+  firebaseStorageBucket: string
+  firebaseUseAuthEmulator: boolean
 }
 
 export type AppRuntimeConfig = {
@@ -25,7 +32,7 @@ declare module 'nuxt/schema' {
 
 declare module '#app' {
   interface NuxtApp {
-    $authGuardMiddleware?: RouteMiddleware
+    $firebaseAuth?: Auth
   }
 }
 
@@ -34,6 +41,5 @@ declare module 'h3' {
     firebase: {
       firestore: Firestore
     }
-    requireAuthentication?: (event: H3Event) => void
   }
 }
