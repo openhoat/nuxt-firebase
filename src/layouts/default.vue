@@ -15,6 +15,11 @@ const demoNavItems: NavItem[] = [
     title: 'Hello',
     to: '/demos/hello',
   },
+  {
+    condition: !!useAppConfig()['features.counter'],
+    title: 'Counter',
+    to: '/demos/counter',
+  },
 ]
 
 const drawer = useState('drawer', () => false)
