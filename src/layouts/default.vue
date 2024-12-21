@@ -21,6 +21,11 @@ const demoNavItems: NavItem[] = [
     to: '/demos/counter',
   },
   {
+    condition: !!useAppConfig()['features.task'],
+    title: 'Tasks',
+    to: '/demos/tasks',
+  },
+  {
     condition: !!useAppConfig()['features.user'],
     title: 'Login',
     to: '/demos/login',
